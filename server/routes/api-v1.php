@@ -47,14 +47,6 @@ Route::controller(UserController::class)->group(function () {
         Route::get('vendor/rfqs/{id}', [VendorRfqController::class, 'show'])->name('vendor.rfqs.show');
     });
 
-    // Quotations
-    Route::middleware(['auth:api'])->group(function () {
-        Route::post('quotations', [QuotationController::class, 'store'])->name('quotations.store');
-        Route::get('quotations/{id}', [QuotationController::class, 'show'])->name('quotations.show');
-        Route::put('quotations/{id}', [QuotationController::class, 'update'])->name('quotations.update');
-        Route::post('quotations/{id}/submit', [QuotationController::class, 'submit'])->name('quotations.submit');
-    });
-
     // Signed URL - any authenticated user
     Route::middleware(['auth:api'])->post('generate-signed-url', SignedUrlController::class);
     // RFQ routes - procurement or admin
@@ -77,11 +69,16 @@ Route::controller(NotificationController::class)->group(function () {
 });
 
 
-Route::middleware(['auth:api', 'role:vendor,admin'])->group(function () {
-    Route::controller(QuotationController::class)->group(function () {
-        // Quotation endpoints
+    Route::middleware(['auth:api', 'role:vendor'])->group(function () {
+        Route::controller(QuotationController::class)->group(function () {
+            // List quotations for current vendor
+            Route::get('quotation', 'index');
+            // Submit quotation for a specific RFQ (vendor only)
+            Route::post('rfq/{rfqId}/quotation', 'store');
+            // Compare quotations for an RFQ (procurement/manager/admin)
+            Route::get('rfq/{rfqId}/compare-quotation', 'compare');
+        });
     });
-});
 Route::delete('media/{media}', [MediaController::class, 'destroy']);
 Route::post('logout', [AuthController::class, 'logout']);
 

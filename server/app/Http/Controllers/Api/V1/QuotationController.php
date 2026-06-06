@@ -3,19 +3,14 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Procurement\SubmitQuotationRequest;
 use App\Traits\ApiResponser;
-use App\Http\Requests\Quotation\CreateQuotationRequest;
-use App\Http\Requests\Quotation\UpdateQuotationRequest;
+use App\Models\Quotation;
 use App\Services\QuotationService;
 use App\Models\Quotation;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Routing\Attributes\Middleware;
-use App\Http\Resources\Quotation\Resource as QuotationResource;
 
-/**
- * @tags Vendor Quotations
- */
-#[Middleware(['auth:api'])]
+#[Group('Quatation', weight: 60)]
 class QuotationController extends Controller
 {
     use ApiResponser;
@@ -27,7 +22,29 @@ class QuotationController extends Controller
         $this->quotationService = $quotationService;
     }
 
-    public function store(CreateQuotationRequest $request): JsonResponse
+    /**
+    * List quotations for the authenticated vendor (or all for admin).
+    */
+    public function index(): JsonResponse
+    {
+        $user = auth('api')->user();
+        $query = Quotation::with(['vendor', 'items']);
+        if ($user->hasRole(config('site.roles.vendor'))) {
+            $vendor = $user->vendor;
+            if ($vendor) {
+                $query->where('vendor_id', $vendor->id);
+            } else {
+                return $this->success([], 200);
+            }
+        }
+        $quotations = $query->orderByDesc('created_at')->paginate(config('site.pagination_limit', 10));
+        return $this->success($quotations);
+    }
+
+    /**
+     * Submit a quotation for an RFQ (Vendor only).
+     */
+    public function store(int $rfqId, SubmitQuotationRequest $request): JsonResponse
     {
         $this->authorize('create', Quotation::class);
 

@@ -4,28 +4,35 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use App\Enums\UserStatus;
+use Illuminate\Support\Facades\Hash;
 
 class AdminSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        $admin = User::firstOrCreate(
-            ['email' => 'admin@vendorbridge.com'],
-            [
-                'first_name' => 'System',
-                'last_name' => 'Admin',
-                'username' => 'admin',
-                'password' => Hash::make('password123'),
-                'status' => 'active',
-                'mobile_no' => '9999999999'
-            ]
-        );
+        $email = env('APP_ADMIN_EMAIL', 'admin@example.com');
+        $password = env('APP_ADMIN_PASSWORD', 'password');
 
-        // Assign the admin role
-        if (!$admin->hasRole('admin')) {
-            $admin->assignRole('admin');
+        $user = User::where('email', $email)->first();
+        if (!$user) {
+            $user = User::create([
+                'first_name' => 'System',
+                'last_name' => 'Administrator',
+                'username' => 'admin',
+                'email' => $email,
+                'password' => Hash::make($password),
+                'status' => UserStatus::ACTIVE,
+            ]);
+        }
+
+        // Assign admin role if not already assigned
+        $adminRole = config('site.roles.admin');
+        if ($adminRole && !$user->hasRole($adminRole)) {
+            $user->assignRole($adminRole);
         }
     }
 }
