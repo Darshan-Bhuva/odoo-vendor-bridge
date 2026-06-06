@@ -59,6 +59,16 @@ class User extends Authenticatable implements OAuthenticatable
         return $this->hasOne(UserDevice::class);
     }
 
+    public function rfqs()
+    {
+        return $this->hasMany(Rfq::class, 'created_by');
+    }
+
+    public function vendor()
+    {
+        return $this->hasOne(Vendor::class);
+    }
+
     protected function name(): Attribute
     {
         return Attribute::make(

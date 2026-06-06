@@ -55,11 +55,16 @@ Route::controller(NotificationController::class)->group(function () {
 });
 
 
-Route::middleware(['auth:api', 'role:vendor,admin'])->group(function () {
-    Route::controller(QuotationController::class)->group(function () {
-        // Quotation endpoints
+    Route::middleware(['auth:api', 'role:vendor'])->group(function () {
+        Route::controller(QuotationController::class)->group(function () {
+            // List quotations for current vendor
+            Route::get('quotation', 'index');
+            // Submit quotation for a specific RFQ (vendor only)
+            Route::post('rfq/{rfqId}/quotation', 'store');
+            // Compare quotations for an RFQ (procurement/manager/admin)
+            Route::get('rfq/{rfqId}/compare-quotation', 'compare');
+        });
     });
-});
 Route::delete('media/{media}', [MediaController::class, 'destroy']);
 Route::post('logout', [AuthController::class, 'logout']);
 

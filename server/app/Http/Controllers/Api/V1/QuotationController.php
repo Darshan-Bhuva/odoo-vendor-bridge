@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Traits\ApiResponser;
 use App\Http\Requests\Procurement\SubmitQuotationRequest;
+use App\Traits\ApiResponser;
+use App\Models\Quotation;
 use App\Services\QuotationService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Routing\Attributes\Middleware;
 
-#[Middleware(['auth:api'])]
+#[Group('Quatation', weight: 60)]
 class QuotationController extends Controller
 {
     use ApiResponser;
@@ -19,6 +19,25 @@ class QuotationController extends Controller
     public function __construct(QuotationService $quotationService)
     {
         $this->quotationService = $quotationService;
+    }
+
+    /**
+    * List quotations for the authenticated vendor (or all for admin).
+    */
+    public function index(): JsonResponse
+    {
+        $user = auth('api')->user();
+        $query = Quotation::with(['vendor', 'items']);
+        if ($user->hasRole(config('site.roles.vendor'))) {
+            $vendor = $user->vendor;
+            if ($vendor) {
+                $query->where('vendor_id', $vendor->id);
+            } else {
+                return $this->success([], 200);
+            }
+        }
+        $quotations = $query->orderByDesc('created_at')->paginate(config('site.pagination_limit', 10));
+        return $this->success($quotations);
     }
 
     /**
