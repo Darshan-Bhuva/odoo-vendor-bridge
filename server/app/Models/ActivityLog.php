@@ -17,6 +17,17 @@ class ActivityLog extends Model
 
     public $timestamps = false; // Because we only have created_at in the schema
 
+    protected static function booted()
+    {
+        static::updating(function () {
+            throw new \Exception('Activity logs are immutable and cannot be updated.');
+        });
+
+        static::deleting(function () {
+            throw new \Exception('Activity logs are immutable and cannot be deleted.');
+        });
+    }
+
     protected function casts(): array
     {
         return [
