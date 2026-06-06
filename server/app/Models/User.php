@@ -59,6 +59,11 @@ class User extends Authenticatable implements OAuthenticatable
         return $this->hasOne(UserDevice::class);
     }
 
+    public function vendor()
+    {
+        return $this->hasOne(Vendor::class);
+    }
+
     protected function name(): Attribute
     {
         return Attribute::make(

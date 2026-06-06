@@ -4,11 +4,17 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Traits\ApiResponser;
-use App\Http\Requests\Procurement\SubmitQuotationRequest;
+use App\Http\Requests\Quotation\CreateQuotationRequest;
+use App\Http\Requests\Quotation\UpdateQuotationRequest;
 use App\Services\QuotationService;
+use App\Models\Quotation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Attributes\Middleware;
+use App\Http\Resources\Quotation\Resource as QuotationResource;
 
+/**
+ * @tags Vendor Quotations
+ */
 #[Middleware(['auth:api'])]
 class QuotationController extends Controller
 {
@@ -21,25 +27,52 @@ class QuotationController extends Controller
         $this->quotationService = $quotationService;
     }
 
-    /**
-     * Submit a quotation for an RFQ (Vendor only).
-     */
-    public function store(int $rfqId, SubmitQuotationRequest $request): JsonResponse
+    public function store(CreateQuotationRequest $request): JsonResponse
     {
-        $quotation = $this->quotationService->submit($rfqId, $request->validated());
-        return $this->success([
-            'success' => true,
-            'message' => 'Quotation submitted successfully.',
-            'quotation' => $quotation
-        ], 201);
+        $this->authorize('create', Quotation::class);
+
+        $quotation = $this->quotationService->store($request->validated());
+
+        return $this->success(
+            new QuotationResource($quotation),
+            'Quotation saved successfully.',
+            201
+        );
     }
 
-    /**
-     * Compare all quotations submitted for an RFQ (Procurement Officer / Manager / Admin).
-     */
-    public function compare(int $rfqId): JsonResponse
+    public function show(int $id): JsonResponse
     {
-        $comparison = $this->quotationService->compare($rfqId);
-        return $this->success($comparison);
+        $quotation = Quotation::findOrFail($id);
+        $this->authorize('view', $quotation);
+
+        return $this->success(
+            new QuotationResource($quotation->load('items'))
+        );
+    }
+
+    public function update(int $id, UpdateQuotationRequest $request): JsonResponse
+    {
+        $quotation = Quotation::findOrFail($id);
+        $this->authorize('update', $quotation);
+
+        $updatedQuotation = $this->quotationService->update($id, $request->validated());
+
+        return $this->success(
+            new QuotationResource($updatedQuotation),
+            'Quotation updated successfully.'
+        );
+    }
+
+    public function submit(int $id): JsonResponse
+    {
+        $quotation = Quotation::findOrFail($id);
+        $this->authorize('update', $quotation);
+
+        $submittedQuotation = $this->quotationService->submit($id);
+
+        return $this->success(
+            new QuotationResource($submittedQuotation),
+            'Quotation submitted successfully.'
+        );
     }
 }

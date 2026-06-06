@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('rfq_id')->constrained('rfqs')->cascadeOnDelete();
             $table->foreignId('vendor_id')->constrained('vendors')->cascadeOnDelete();
             $table->string('quotation_number', 50)->unique();
-            $table->integer('delivery_days')->nullable();
+            $table->decimal('tax_percent', 5, 2)->default(0);
             $table->text('notes')->nullable();
             $table->decimal('subtotal', 12, 2)->default(0);
             $table->decimal('tax_amount', 12, 2)->default(0);

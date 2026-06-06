@@ -33,7 +33,8 @@ class PermissionSeeder extends Seeder
                 'create-rfqs',
                 'compare-quotations',
                 'generate-purchase-orders',
-                'generate-invoices'
+                'generate-invoices',
+                'manage-vendors'
             ],
             config('site.roles.vendor') => [
                 'submit-quotations',
