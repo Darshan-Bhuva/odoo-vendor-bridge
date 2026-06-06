@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('rfq_item_id')->constrained('rfq_items')->cascadeOnDelete();
             $table->decimal('unit_price', 12, 2);
             $table->decimal('quantity', 12, 2);
-            $table->decimal('tax_percent', 5, 2)->default(0);
+            $table->integer('delivery_days')->nullable();
             $table->decimal('line_total', 12, 2);
             $table->timestamps();
         });

@@ -5,17 +5,18 @@ namespace App\Models;
 use App\Traits\BaseModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 #[Fillable([
-    'user_id', 'module', 'reference_type', 'reference_id', 'action', 'description',
+    'user_id', 'module', 'reference_type', 'reference_id', 'action', 'description', 'created_at',
 ])]
 class ActivityLog extends Model
 {
-    use HasFactory, BaseModel;
+    use BaseModel;
 
-    public $timestamps = false; // Because we only have created_at in the schema
+    // The activity logs table doesn't have updated_at
+    const UPDATED_AT = null;
 
     protected static function booted()
     {
@@ -31,6 +32,7 @@ class ActivityLog extends Model
     protected function casts(): array
     {
         return [
+            'reference_id' => 'integer',
             'created_at' => 'timestamp',
         ];
     }
@@ -38,5 +40,13 @@ class ActivityLog extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the owning reference model (e.g. Rfq, Quotation, PO, Invoice).
+     */
+    public function reference(): MorphTo
+    {
+        return $this->morphTo();
     }
 }

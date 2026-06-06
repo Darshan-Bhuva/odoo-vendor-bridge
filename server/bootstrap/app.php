@@ -18,11 +18,6 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->prefix('api/v1')
                 ->group(base_path('routes/api-v1.php'));
 
-            Route::middleware('api')
-                ->as('admin.')
-                ->prefix('api/v1/admin')
-                ->group(base_path('routes/admin-v1.php'));
-
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
 
@@ -32,13 +27,19 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->alias([
-            'developer' => Spatie\LittleGateKeeper\AuthMiddleware::class,
-            'notification-read' => MarkNotificationsAsRead::class,
-        ]);
         $middleware->group('api', [
             'throttle:api',
             Illuminate\Routing\Middleware\SubstituteBindings::class,
+        ]);
+
+        $middleware->encryptCookies(except: [
+            'auth_token',
+        ]);
+
+        $middleware->alias([
+            'developer' => Spatie\LittleGateKeeper\AuthMiddleware::class,
+            'notification-read' => MarkNotificationsAsRead::class,
+            'role' => Spatie\Permission\Middleware\RoleMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
@@ -51,6 +52,10 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*') && $e instanceof NotFoundHttpException) {
                 $route = $request->path();
                 throw new CustomException(__('entity.entityNotFound', ['entity' => "route $route"]));
+            }
+
+            if ($request->is('api/*') && $e instanceof Spatie\Permission\Exceptions\UnauthorizedException) {
+                throw new CustomException(__('message.unauthorized_access'), 403);
             }
         });
     })->create();
