@@ -21,7 +21,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  */
 #[Fillable([
     'first_name', 'last_name', 'username', 'email', 'status', 'password',
-    'mobile_no', 'email_verified_at', 'last_login_at', 'created_at',
+    'mobile_no', 'email_verified_at', 'last_login_at', 'created_at', 'avatar'
 ])]
 #[Hidden([
     'password', 'remember_token',

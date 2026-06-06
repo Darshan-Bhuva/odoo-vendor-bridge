@@ -35,9 +35,17 @@ class RoleSeeder extends Seeder
                 'guard_name' => 'api',
             ],
             [
-                'name' => config('site.roles.user'),
+                'name' => config('site.roles.procurement'),
                 'guard_name' => 'api',
             ],
+            [
+                'name' => config('site.roles.vendor'),
+                'guard_name' => 'api',
+            ],
+            [
+                'name' => config('site.roles.manager'),
+                'guard_name' => 'api',
+            ]
         ]);
     }
 }
