@@ -47,6 +47,20 @@ class AuthController extends Controller
     }
 
     /**
+     * Staff Register.
+     *
+     * @unauthenticated
+     *
+     * @response array{message: string, data: UserResource, token: string}
+     */
+    public function staffRegister(\App\Http\Requests\Auth\StaffRegister $request): JsonResponse
+    {
+        $data = $this->authService->staffRegister($request->validated());
+
+        return $this->success($data, 200);
+    }
+
+    /**
      * Verify reset OTP.
      *
      * @unauthenticated

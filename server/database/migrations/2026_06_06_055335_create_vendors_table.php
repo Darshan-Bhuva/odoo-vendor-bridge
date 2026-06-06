@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('gst_number', 50)->nullable();
             $table->string('contact_person', 150);
             $table->string('email', 190)->index();
-            $table->string('phone', 30)->nullable();
             $table->text('address')->nullable();
             $table->string('status', 20)->index();
             $table->timestamps();

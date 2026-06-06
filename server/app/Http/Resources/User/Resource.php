@@ -37,6 +37,7 @@ class Resource extends JsonResource
      *     name: string,
      *     display_status: string,
      *     display_mobile_no: string,
+     *     avatar: string|null,
      *     profile_image: MediaResource|null,
      *     user_device: UserDeviceResource|null
      * }
@@ -48,8 +49,15 @@ class Resource extends JsonResource
         }
 
         $data = $this->fields();
+        $data['avatar'] = $this->avatar;
         $data['profile_image'] = MediaResource::make($this->whenLoadedMedia(config('media.tags.profile'), true));
         $data['user_device'] = UserDeviceResource::make($this->whenLoaded('userDevice'));
+        $data['roles'] = $this->getRoleNames();
+        $data['permissions'] = $this->getAllPermissions()->pluck('name');
+        
+        if ($this->hasRole(config('site.roles.vendor'))) {
+            $data['vendor'] = \App\Models\Vendor::where('user_id', $this->id)->first();
+        }
 
         return $data;
     }

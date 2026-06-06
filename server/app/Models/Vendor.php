@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'user_id', 'company_name', 'vendor_code', 'category', 'gst_number',
-    'contact_person', 'email', 'phone', 'address', 'status',
+    'contact_person', 'email', 'address', 'status',
 ])]
 class Vendor extends Model
 {
