@@ -12,6 +12,8 @@ use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\PurchaseOrderController;
 use App\Http\Controllers\Api\V1\QuotationController;
 use App\Http\Controllers\Api\V1\RfqController;
+use App\Http\Controllers\Api\V1\VendorController;
+use App\Http\Controllers\Api\V1\VendorRfqController;
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('register', 'register');
@@ -33,6 +35,18 @@ Route::controller(UserController::class)->group(function () {
     Route::middleware(['auth:api'])->delete('media/{media}', [MediaController::class, 'destroy']);
     // Logout
     Route::middleware(['auth:api'])->post('logout', [AuthController::class, 'logout']);
+    
+    // Admin & Procurement
+    Route::middleware(['auth:api'])->group(function () {
+        Route::apiResource('vendors', VendorController::class);
+    });
+
+    // Vendor Only
+    Route::middleware(['auth:api'])->group(function () {
+        Route::get('vendor/rfqs', [VendorRfqController::class, 'index'])->name('vendor.rfqs.index');
+        Route::get('vendor/rfqs/{id}', [VendorRfqController::class, 'show'])->name('vendor.rfqs.show');
+    });
+
     // Signed URL - any authenticated user
     Route::middleware(['auth:api'])->post('generate-signed-url', SignedUrlController::class);
     // RFQ routes - procurement or admin

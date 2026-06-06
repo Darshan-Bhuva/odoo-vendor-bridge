@@ -12,8 +12,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable([
-    'rfq_id', 'vendor_id', 'quotation_number', 'delivery_days', 
-    'notes', 'subtotal', 'tax_amount', 'total_amount', 'status', 'submitted_at',
+    'rfq_id', 'vendor_id', 'quotation_number', 'tax_percent', 'notes',
+    'subtotal', 'tax_amount', 'total_amount', 'status', 'submitted_at'
 ])]
 class Quotation extends Model
 {

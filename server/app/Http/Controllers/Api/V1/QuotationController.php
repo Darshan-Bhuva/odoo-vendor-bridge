@@ -7,6 +7,7 @@ use App\Http\Requests\Procurement\SubmitQuotationRequest;
 use App\Traits\ApiResponser;
 use App\Models\Quotation;
 use App\Services\QuotationService;
+use App\Models\Quotation;
 use Illuminate\Http\JsonResponse;
 
 #[Group('Quatation', weight: 60)]
@@ -45,20 +46,50 @@ class QuotationController extends Controller
      */
     public function store(int $rfqId, SubmitQuotationRequest $request): JsonResponse
     {
-        $quotation = $this->quotationService->submit($rfqId, $request->validated());
-        return $this->success([
-            'success' => true,
-            'message' => 'Quotation submitted successfully.',
-            'quotation' => $quotation
-        ], 201);
+        $this->authorize('create', Quotation::class);
+
+        $quotation = $this->quotationService->store($request->validated());
+
+        return $this->success(
+            new QuotationResource($quotation),
+            'Quotation saved successfully.',
+            201
+        );
     }
 
-    /**
-     * Compare all quotations submitted for an RFQ (Procurement Officer / Manager / Admin).
-     */
-    public function compare(int $rfqId): JsonResponse
+    public function show(int $id): JsonResponse
     {
-        $comparison = $this->quotationService->compare($rfqId);
-        return $this->success($comparison);
+        $quotation = Quotation::findOrFail($id);
+        $this->authorize('view', $quotation);
+
+        return $this->success(
+            new QuotationResource($quotation->load('items'))
+        );
+    }
+
+    public function update(int $id, UpdateQuotationRequest $request): JsonResponse
+    {
+        $quotation = Quotation::findOrFail($id);
+        $this->authorize('update', $quotation);
+
+        $updatedQuotation = $this->quotationService->update($id, $request->validated());
+
+        return $this->success(
+            new QuotationResource($updatedQuotation),
+            'Quotation updated successfully.'
+        );
+    }
+
+    public function submit(int $id): JsonResponse
+    {
+        $quotation = Quotation::findOrFail($id);
+        $this->authorize('update', $quotation);
+
+        $submittedQuotation = $this->quotationService->submit($id);
+
+        return $this->success(
+            new QuotationResource($submittedQuotation),
+            'Quotation submitted successfully.'
+        );
     }
 }

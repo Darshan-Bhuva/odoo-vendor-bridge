@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
-    'quotation_id', 'rfq_item_id', 'unit_price', 'quantity', 'tax_percent', 'line_total',
+    'quotation_id', 'rfq_item_id', 'quantity', 'unit_price',
+    'delivery_days', 'line_total'
 ])]
 class QuotationItem extends Model
 {
