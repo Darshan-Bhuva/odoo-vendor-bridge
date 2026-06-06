@@ -20,13 +20,6 @@ class Register extends FormRequest
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|min:8|confirmed',
             'mobile_no' => 'nullable|min:8|max:15',
-            'role' => 'required|in:vendor',
-            'company_name' => 'required_if:role,vendor|max:255',
-            'contact_person' => 'required_if:role,vendor|max:255',
-            'gst_number' => 'required_if:role,vendor|max:50',
-            'category' => 'nullable|max:100',
-            'address' => 'nullable|max:500',
-            'avatar' => 'nullable|url|max:2048',
         ];
     }
 }
