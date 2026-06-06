@@ -1,6 +1,9 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2025-07-15',
-  devtools: { enabled: true },
-  modules: ['@nuxt/image']
+  modules: ['@nuxt/ui', '@nuxt/image'],
+  css: ['./app/assets/css/main.css'],
+  runtimeConfig: {
+    public: {
+      apiUrl: 'http://10.197.109.44:8000/api/v1'
+    }
+  }
 })
