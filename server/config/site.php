@@ -12,11 +12,13 @@ return [
     ],
     'roles' => [
         'admin' => 'admin',
-        'user' => 'user',
+        'procurement' => 'procurement',
+        'vendor' => 'vendor',
     ],
     'roleIds' => [
         'admin' => 1,
-        'user' => 2,
+        'procurement' => 2,
+        'vendor' => 3,
     ],
     'otp' => [
         'master_otp' => env('MASTER_OTP'),
