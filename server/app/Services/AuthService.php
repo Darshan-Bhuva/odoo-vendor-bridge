@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use App\Http\Resources\User\Resource as UserResource;
+use Illuminate\Support\Str;
 
 class AuthService
 {
@@ -37,7 +38,22 @@ class AuthService
     public function register(array $inputs): array
     {
         $user = $this->userObj->create(\Illuminate\Support\Collection::make($inputs)->only($this->userObj->getFillable())->toArray());
-        $user->assignRole(config('site.roles.user'));
+        $role = $inputs['role'] ?? config('site.roles.vendor');
+        $user->assignRole($role);
+
+        if ($role === config('site.roles.vendor')) {
+            \App\Models\Vendor::create([
+                'user_id' => $user->id,
+                'company_name' => $inputs['company_name'] ?? null,
+                'vendor_code' => strtoupper(\Illuminate\Support\Str::random(6)),
+                'contact_person' => $inputs['contact_person'] ?? null,
+                'gst_number' => $inputs['gst_number'] ?? null,
+                'category' => $inputs['category'] ?? null,
+                'address' => $inputs['address'] ?? null,
+                'email' => $inputs['email'],
+                'status' => \App\Enums\Procurement\VendorStatusEnum::PENDING,
+            ]);
+        }
 
         try {
             Mail::to($user)->send(new WelcomeUser($user));
@@ -47,6 +63,29 @@ class AuthService
 
         $data = [
             'message' => __('message.register_success'),
+            'data' => new UserResource($this->userService->resource($user->id)),
+            'token' => $user->createToken(config('app.name'))->accessToken,
+        ];
+
+        return $data;
+    }
+
+    public function staffRegister(array $inputs): array
+    {
+        $user = $this->userObj->create(\Illuminate\Support\Collection::make($inputs)->only($this->userObj->getFillable())->toArray());
+        
+        // Expected roles: 'manager' or 'procurement'
+        $role = $inputs['role'];
+        $user->assignRole($role);
+
+        try {
+            Mail::to($user)->send(new WelcomeUser($user));
+        } catch (\Exception $e) {
+            Log::info('Welcome User mail failed.' . $e->getMessage());
+        }
+
+        $data = [
+            'message' => 'Staff registered successfully.',
             'data' => new UserResource($this->userService->resource($user->id)),
             'token' => $user->createToken(config('app.name'))->accessToken,
         ];

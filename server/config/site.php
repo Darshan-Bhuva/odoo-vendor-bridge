@@ -14,11 +14,13 @@ return [
         'admin' => 'admin',
         'procurement' => 'procurement',
         'vendor' => 'vendor',
+        'manager' => 'manager',
     ],
     'roleIds' => [
         'admin' => 1,
         'procurement' => 2,
         'vendor' => 3,
+        'manager' => 4,
     ],
     'otp' => [
         'master_otp' => env('MASTER_OTP'),
