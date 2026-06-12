@@ -1,75 +1,44 @@
-# Nuxt Minimal Starter
+# Odoo Vendor Bridge - Client (Frontend)
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+This is the frontend application for the **Odoo Vendor Bridge**, providing the interface for vendors, procurement, and managers to interact with the platform.
 
-## Setup
+## 🛠️ Tech Stack & Versions
 
-Make sure to install dependencies:
+This project is built using a modern Vue/Nuxt stack. Here are the specific technologies and their versions used:
 
-```bash
-# npm
-npm install
+- **Framework:** Nuxt `^4.4.7`
+- **Core Library:** Vue `^3.5.35`
+- **Styling:** TailwindCSS `^4.3.0`
+- **UI Components:** @nuxt/ui `^4.8.2`
+- **Image Optimization:** @nuxt/image `^2.0.0`
+- **Routing:** vue-router `^5.1.0`
+- **Schema Validation:** Zod `^4.4.3`
 
-# pnpm
-pnpm install
+## 📦 Setup & Installation
 
-# yarn
-yarn install
+Make sure you have Node.js installed.
 
-# bun
-bun install
-```
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-## Development Server
+2. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+   The application will be available at `http://localhost:3000`.
 
-Start the development server on `http://localhost:3000`:
+## 🚀 Build for Production
 
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
+To build the application for a production environment:
 
 ```bash
-# npm
 npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
 ```
 
-Locally preview production build:
+To preview the production build locally:
 
 ```bash
-# npm
 npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
 ```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
