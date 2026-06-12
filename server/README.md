@@ -1,228 +1,144 @@
-<!-- PROJECT BANNER -->
-<p align="center">
-  <img src="public/assets/img/logo.png" alt="Laravel Boilerplate Logo" width="120"/>
-</p>
-
-<h1 align="center">Laravel Boilerplate</h1>
+# Odoo Vendor Bridge - Server (Backend)
 
 <p align="center">
-  <b>A robust starter project using <code>Laravel 12</code> for rapid, modern API development.</b><br>
-  <i>Clean structure, best practices, authentication, and a suite of developer tools out of the box.</i>
+  <b>A robust Laravel-based backend server for the Odoo Vendor Bridge platform.</b><br>
+  <i>Facilitates RFQs, Quotations, Approvals, and Vendor Management.</i>
 </p>
 
 <p align="center">
-  <img alt="Laravel" src="https://img.shields.io/badge/Laravel-12.x-red?logo=laravel&logoColor=white">
-  <img alt="License" src="https://img.shields.io/badge/license-MIT-blue.svg">
-  <img alt="Code Style" src="https://img.shields.io/badge/code%20style-pint-ff69b4">
+  <img alt="Laravel" src="https://img.shields.io/badge/Laravel-11.x/12.x-red?logo=laravel&logoColor=white">
+  <img alt="PHP" src="https://img.shields.io/badge/PHP-8.3-777BB4?logo=php&logoColor=white">
 </p>
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Overview
 
+This repository contains the backend server for the **Odoo Vendor Bridge**. It acts as an API gateway that enables seamless communication and workflow execution between the company's internal procurement team (using Odoo) and external vendors.
+
+It provides a secure, role-based RESTful API for handling vendors, Requests for Quotation (RFQs), Quotations, Approvals, Purchase Orders (POs), and Invoices.
+
+## ✨ Features
+
+- **Authentication & Security:** JWT-based secure authentication using Laravel Passport, complete with OTP verification features.
+- **Role-Based Access Control (RBAC):** Powered by Spatie Permission. Distinct workflows for **Admin**, **Procurement**, **Manager**, and **Vendor** roles.
+- **Procurement Workflows:** 
+  - Procurement creates RFQs.
+  - Vendors submit Quotations against assigned RFQs.
+  - Procurement/Managers compare quotations and approve them.
+- **Approvals & POs:** Multi-tier approval system for Managers and Admins.
+- **Media Management:** Powered by Plank Mediable, integrated with S3 for secure file uploads via Signed URLs.
+- **Push Notifications:** Integrated with OneSignal for real-time alerts.
+- **Developer & Monitoring Tools:** Includes Laravel Telescope, Horizon, Pulse, and Log Viewer out of the box.
+
+---
+
+## 🛠️ Requirements
+
+- **PHP** `^8.3`
+- **Laravel** `12.x` / `13.x`
+- **Composer**
+- **Database** (PostgreSQL 18.x)
+- **Redis** (for Queue and Cache management)
+
+---
+
+## 📦 Setup Instructions
+
+Follow these steps to set up the project locally:
+
+### 1. Clone the repository
 ```bash
-# 1. Clone the repository
-$ git clone <your-repo-url>
-$ cd laravel-boilerplate
-
-# 2. Install dependencies
-$ composer install
-$ npm install && npm run build
-
-# 3. Copy .env and configure
-$ cp .env.example .env
-
-# 4. Configure Git hooks (Husky)
-$ git config core.hooksPath .husky
-
-# 5. Generate app key
-$ php artisan key:generate
-
-# 6. Run migrations and seeders
-$ php artisan migrate --seed
-
-# 7. Start the server
-$ php artisan serve
+git clone <repository-url>
+cd odoo-vendor-bridge/server
 ```
 
----
+### 2. Install Dependencies
+```bash
+composer install
+```
 
-## ✨ Features & Packages
+### 3. Environment Configuration
+Copy the `.env.example` file to create your local `.env`.
+```bash
+cp .env.example .env
+```
+Update the `.env` file with your local database credentials, AWS/S3 settings, and OneSignal keys.
 
--   **[Authentication (Laravel Passport)](https://laravel.com/docs/12.x/passport)**
--   **[Role & Permission Management (Spatie Laravel Permission)](https://spatie.be/docs/laravel-permission/v6/introduction)**
--   **[Media/File Management (Plank Mediable)](https://github.com/plank/laravel-mediable)**
--   **[API Documentation (L5-Swagger)](https://github.com/DarkaOnLine/L5-Swagger)**
--   **[Request Monitoring (Laravel Telescope)](https://laravel.com/docs/12.x/telescope)**
--   **[Log Management (Log Viewer)](https://github.com/opcodesio/log-viewer)**
--   **[Queue Monitoring (Laravel Horizon)](https://laravel.com/docs/12.x/horizon)**
--   **[Performance Monitoring (Laravel Pulse)](https://laravel.com/docs/12.x/pulse)**
--   **[Code Style (Laravel Pint)](https://laravel.com/docs/12.x/pint)**
--   **[Static Analysis (Larastan/PHPStan)](https://github.com/larastan/larastan)**
--   **[Universal Developer Panel Protection (Littlegatekeeper)](https://github.com/spatie/laravel-littlegatekeeper)**
+### 4. Generate Application Key
+```bash
+php artisan key:generate
+```
 
----
+### 5. Run Migrations & Seeders
+This command will create the required tables and seed default roles/permissions.
+```bash
+php artisan migrate --seed
+```
 
-## ⚙️ Custom Environment Variables
+### 6. Install Passport (OAuth2)
+Generate the encryption keys needed to create secure access tokens.
+```bash
+php artisan passport:install
+```
 
-> In addition to standard Laravel variables, set these in your `.env`:
+### 7. Create Storage Link
+Make uploaded files publicly accessible (if using local driver).
+```bash
+php artisan storage:link
+```
 
--   `FRONT_WEBSITE_URL` — The URL of your frontend application
--   `MASTER_PASSWORD` — Master password for privileged/admin operations
--   `MASTER_OTP` — Master OTP code for bypassing OTP verification
--   `DEVELOPER_USERNAME` / `DEVELOPER_PASSWORD` — Credentials for the developer panel
--   `LOG_DAILY_DAYS` — Days to retain log files takes 30 days default
--   `TELESCOPE_ENABLED` — Enable/disable Laravel Telescope
--   `CDN_ENABLE` — Enable/disable CDN usage for media URLs
--   `CDN_URL` — The base URL of your CDN for media assets
--   `ONESIGNAL_APP_ID` / `ONESIGNAL_API_KEY` — Your OneSignal App ID and API Key for push notifications
--   `NOTIFICATION_ENABLED` — Enable or disable the notification system (true/false)
-
----
-
-## 🗂️ Custom Configuration File Structure
-
--   `site.php` — Site-wide settings (frontend URL, pagination, roles, OTP, user status)
--   `media.php` — Media/file upload settings (tags, directories, CDN, types, MIME mappings)
--   `aws.php` — AWS credentials/settings for S3 and related services
-
----
-
-## 🌍 Localization File Structure
-
-Localization files are in `resources/lang/en/`:
-
--   `email.php` — Email-related strings
--   `entity.php` — Entity names/messages
--   `message.php` — General messages
--   `status.php` — Status labels/messages
--   `notification.php` — Notification titles and descriptions
-
-Each file returns an array of key-value pairs for use with Laravel's `__()` and `trans()` functions.
+### 8. Start the Development Server
+```bash
+php artisan serve
+```
+The API will now be accessible at `http://localhost:8000`.
 
 ---
 
-## 📦 API Overview
+## 🧑‍💻 Key Commands & Tools
 
-### Supported Endpoints
+### Queue Management
+To process background jobs (like sending emails or notifications):
+```bash
+php artisan queue:work
+```
+Or, if you are using Horizon for queue monitoring:
+```bash
+php artisan horizon
+```
 
--   **Auth:** Register, Login, Logout, Get Profile, Forget Password (OTP), Reset Password
--   **User:** Update Profile, Change Password, Change Status (Admin)
--   **Country:** List countries (with filters)
--   **Language:** List languages
--   **Master Settings:** List and detail endpoints
--   **Signed URL:** Generate signed URLs for file uploads
+### Clearing Cache
+If you encounter caching issues with config or routes:
+```bash
+php artisan optimize:clear
+```
 
-> API documentation is auto-generated and available at `/api/documentation` via Swagger (L5-Swagger).
-
-### API Folder Structure
-
--   `app/Http/Controllers/Api/` — API controllers (RESTful, thin, service-driven)
--   `app/Http/Requests/` — FormRequest classes for validation
--   `app/Http/Resources/` — API resource and collection transformers
--   `app/Services/` — Business logic and service classes
--   `app/Models/` — Eloquent models
--   `app/Rules/` — Custom validation rules
--   `app/Libraries/` — Libraries classes
-
-## 🛠️ Generate Custom Swagger Documentation with Minimal Code in Controllers
-
-Your custom Swagger setup lives in the `app/Swagger/` directory.
-
-📁 Folder Structure
-
-- app/Swagger/Processors/
-Contains custom processors used to dynamically generate Swagger documentation (e.g., auto-generating request bodies, responses, etc.).
-
-⚙️ Setup Instructions
-
-- To enable your custom processors, add the following entry inside the processors array in the l5-swagger.php configuration file (located in config/):
-
-- new \App\Swagger\Processors\SuccessResponsesProcessor(),
-
-🚀 What This Provides
-
-- Automatically generates Swagger documentation based on Form Request rules.
-- Allows you to write minimal or no OpenAPI annotations in controllers.
-- Supports customizing, extending, or skipping auto-generation when needed.
+### Code Quality & Testing
+- **Format Code (Pint):**
+  ```bash
+  ./vendor/bin/pint
+  ```
+- **Static Analysis (PHPStan):**
+  ```bash
+  ./vendor/bin/phpstan analyse
+  ```
+- **Run Tests:**
+  ```bash
+  php artisan test
+  ```
 
 ---
 
-## 🛠️ Custom Functionality
+## 🔐 Roles & Permissions
 
-### Custom Artisan Commands
-
--   `php artisan telescope:clear` — Clears all entries/data from Laravel Telescope
--   `php artisan pulse:clear` — Clears all entries/data from Laravel Pulse
-
-### Custom Validation Rules & Libraries
-
--   **MediaRule:** Reusable validation for media/image fields (tags, mime types, nullable/required)
--   **MediaHelper:** File naming, extension detection, media attachment/deletion, aggregate type detection
--   **Image Optimization:** Configured via `config/mediable.php` for automatic optimization (JPEG, PNG, GIF, WebP, AVIF)
-
-### Mail Layout Customization
-
--   All emails use a custom Blade layout: `resources/views/emails/layouts/master.blade.php`
-    -   Branded header with logo
-    -   Localized greetings and sign-off
-    -   Centralized content section (`@yield('content')`)
-    -   Footer with copyright
-
-### Notification System
-
--   This boilerplate includes a robust notification system using Laravel's native features.
-
-    -   **Channels Supported:** Database, Email, and optional custom channels (e.g., SMS).
-    -   **How It Works:** Notifications are created as classes in `app/Notifications/`. You can add new notification types by creating additional classes in this directory.
-    -   **API Integration:** Endpoints are available for listing, marking as read/unread, and managing user notifications.
-
-> See the `app/Notifications/` directory and related controllers/services for implementation details.
+- **Admin**: Full system access, can manage users, settings, and override approvals.
+- **Procurement**: Can create RFQs, view all vendors, manage Purchase Orders, and manage Invoices.
+- **Manager**: Responsible for reviewing and approving RFQs and POs, as well as viewing analytics.
+- **Vendor**: Limited access. Can view assigned RFQs, submit Quotations, and view their specific POs and Invoices.
 
 ---
 
-## 🧑‍💻 Developer Tools
-
-### Developer Panel
-
--   `/developer/telescope` — Laravel Telescope
--   `/developer/log-viewer` — Log Viewer
--   `/developer/pulse` — Laravel Pulse
--   `/developer/login` — Login for developer tools
--   **Authentication:** Protected by `DEVELOPER_USERNAME` and `DEVELOPER_PASSWORD` in `.env`
-
-### Pre-commit Checklist & Code Quality
-
--   Lint staged PHP files: `npx --no-install lint-staged`
--   Code style check: `./vendor/bin/pint`
--   Static analysis: `./vendor/bin/phpstan --memory-limit=2G analyse`
--   Run tests: `./vendor/bin/phpunit`
-
-> If you have issues committing, ensure pre-commit hooks are executable:
->
-> ```bash
-> chmod ug+x .husky/pre-commit
-> ```
-
--   **Pint:** Run `./vendor/bin/pint` to auto-format code. VS Code users can bind Pint to `Ctrl+S` for instant formatting.
--   **Larastan/PHPStan:** Run `./vendor/bin/phpstan analyse` for static analysis.
-
----
-
-## 🤝 Contributing
-
-Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
-
----
-
-## 📄 License
-
-[MIT](LICENSE)
-
----
-
-## 💬 Support
-
-For questions, suggestions, or support, please open an issue or contact the maintainer.
-#   s i t e g p t  
- 
+## 📚 API Documentation
+API documentation is automatically generated.
+Access the interactive Swagger UI at: `http://localhost:8000/api/documentation` (if L5-Swagger/Scramble is configured).
